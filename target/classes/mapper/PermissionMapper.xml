@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.xbwl.demo.repository.permission.PermissionMyBatisDao">
+	
+	<select id="findByRoleId"  parameterType="long" resultType="Permission">
+		select rr.id, 
+			 rr.role_id roleId,
+		     rr.res_id resId,
+		     re.parent_id resPid,
+		     re.res_name resName 
+		from ss_role_res rr
+		left join ss_resource re on rr.res_id = re.id
+		where rr.role_id = #{roleId}
+		and rr.res_id != 0
+		order by re.res_sort ASC
+	</select>
+	
+	<select id="findAllByRoleId"  parameterType="long" resultType="Permission">
+		select rr.id, 
+			 rr.role_id roleId,
+		     rr.res_id resId,
+		     re.parent_id resPid,
+		     re.res_name resName 
+		from ss_role_res rr
+		left join ss_resource re on rr.res_id = re.id
+		where rr.role_id = #{roleId}
+		order by re.res_sort ASC
+	</select>
+	
+	<select id="findBtnByRoleId"  parameterType="long" resultType="Permission">
+		select rr.id, 
+		       re.res_code resCode 
+		from ss_role_res rr
+		left join ss_resource re on rr.res_id = re.id
+		where rr.role_id = #{roleId}
+		and re.res_type = 1
+		and re.state = 1
+		and rr.res_id != 0
+		order by re.res_sort ASC
+	</select>
+	
+	<select id="findByRoleIdAndResId"  parameterType="long" resultType="Permission">
+		select rr.id, 
+		     rr.res_id resId,
+		     re.parent_id resPid,
+		     re.res_name resName 
+		from ss_role_res rr
+		left join ss_resource re on rr.res_id = re.id
+		where rr.role_id = #{roleId}
+		order by re.res_sort ASC
+	</select>
+	
+	<select id="findAll"  parameterType="map" resultType="Permission">
+		select distinct(rr.role_id) roleId, ro.role_name roleName, ro.role_code roleCode
+		from ss_role_res rr
+		left join ss_role ro on rr.role_id = ro.id
+		where rr.res_id != 0
+		<if test="name != null">
+			and r.role_name like '%${name}%'
+		</if>
+	</select>
+	
+	<select id="findOne" parameterType="long" resultType="Permission">
+		select id, 
+			   role_id roleId, 
+			   res_id resId
+		from ss_role_res
+		where id=#{id}
+	</select>
+		
+	<insert id="save" parameterType="Permission">
+		insert into ss_role_res (id, 
+							 role_id, 
+							 res_id)
+		values (SS_SEQ_PERMISSION.nextval,
+							 #{roleId},  
+							 #{resId})
+	</insert>
+	
+	<delete id="deleteByRoleId" parameterType="long">
+	    delete from ss_role_res where role_id =#{roleId}
+	</delete>
+	<delete id="deleteByResId" parameterType="long">
+	    delete from ss_role_res where res_id =#{resId}
+	</delete>
+	
+	<delete id="deleteByRoleIds" parameterType="java.util.List">
+	    delete from ss_role_res where role_id in 
+	    <foreach collection="list" index="i" item="id" open="(" separator="," close=")"> 
+	       #{id} 
+	    </foreach>
+	</delete>
+	
+	<delete id="deleteByResIds" parameterType="java.util.List">
+	    delete from ss_role_res where res_id in 
+	    <foreach collection="list" index="i" item="id" open="(" separator="," close=")"> 
+	       #{id} 
+	    </foreach>
+	</delete>
+</mapper> 

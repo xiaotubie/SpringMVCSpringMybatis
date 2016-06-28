@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.xbwl.demo.repository.resource.ResourceMyBatisDao">
+	
+	<select id="findAllResources" resultType="Resource">
+		select r.id, 
+			   r.parent_id parentId,
+			   r.res_name resName,
+			   r.res_sort resSort
+		from ss_resource r
+		where r.state = 1
+		order by r.res_sort ASC
+	</select>
+	
+	<select id="findAllResourcesNoBtn" resultType="Resource">
+		select r.id, 
+			   r.parent_id parentId,
+			   r.res_name resName,
+			   r.res_sort resSort
+		from ss_resource r
+		where r.res_type = 0
+		and r.state = 1
+		order by r.res_sort ASC
+	</select>
+	
+	<select id="findAllResourcesByAdmin" resultType="Resource">
+		select r.id, 
+		     r.parent_id parentId,
+		     r.res_name resName,
+		     r.res_url resUrl,
+		     r.res_sort resSort
+		from ss_resource r
+		where r.res_type = 0
+		and r.state = 1
+		order by r.res_sort ASC
+	</select>
+	
+	<select id="findAllResourcesByRole" parameterType="long" resultType="Resource">
+		select r.id, 
+		     r.parent_id parentId,
+		     r.res_name resName,
+		     r.res_url resUrl,
+		     r.res_sort resSort
+		from ss_role_res rr
+		left join ss_resource r on r.id = rr.res_id 
+		where r.res_type = 0
+		and r.state = 1
+		and rr.role_id = #{roleId}
+		order by r.res_sort ASC
+	</select>
+	
+	<select id="findAllResourcesByParenIdAndAdmin" parameterType="long" resultType="Resource">
+		select r.id, 
+		     r.parent_id parentId,
+		     r.res_name resName,
+		     r.res_url resUrl,
+		     r.res_sort resSort
+		from ss_resource r
+		where r.parent_id = #{parentId}
+		and r.res_type = 0
+		order by r.res_sort ASC
+	</select>
+	
+	<select id="findAllResourcesByParenIdAndRole" parameterType="long" resultType="Resource">
+		select r.id, 
+		     r.parent_id parentId,
+		     r.res_name resName,
+		     r.res_url resUrl,
+		     r.res_sort resSort
+		from ss_role_res rr
+		left join ss_resource r on r.id = rr.res_id 
+		where r.parent_id = #{parentId}
+		and r.res_type = 0
+		order by r.res_sort ASC
+	</select>
+	
+	<select id="findAll" parameterType="map" resultType="Resource">
+		select r.id, 
+			   r.res_code resCode, 
+			   r.res_name resName, 
+			   re.res_name parentName,
+			   r.res_url resUrl, 
+			   r.res_type resType, 
+			   r.create_date createDate, 
+			   r.update_date updateDate, 
+			   r.create_id createId, 
+			   r.update_id updateId,
+			   r.state, 
+			   createUser.name createName, 
+			   updateUser.name updateName  
+		from ss_resource r 
+		left join ss_user createUser on r.create_id = createUser.id
+		left join ss_user updateUser on r.update_id = updateUser.id
+		left join ss_resource re on r.parent_id = re.id
+		<if test="name != null">
+			where r.res_name like '%${name}%'
+		</if>
+		 	order by r.res_code asc
+		
+	</select>
+	
+	<select id="findOne" parameterType="long" resultType="Resource">
+		select id, 
+			   res_code resCode, 
+			   res_name resName,
+			   parent_id parentId,
+			   res_url resUrl, 
+			   res_type resType, 
+			   state,
+			   res_sort resSort 
+		from ss_resource
+		where id=#{id}
+	</select>
+		
+	<insert id="save" parameterType="Resource">
+		insert into ss_resource (id, 
+		                      parent_id,
+							  res_code , 
+			    			  res_name, 
+			   				  res_url, 
+			   			      res_type, 
+			 				  create_date, 
+			  				  create_id, 
+			  				  state,
+			  				  res_sort
+							 )
+		values (SS_SEQ_ROLE.nextval,
+							 #{parentId},
+							 #{resCode},  
+							 #{resName}, 
+							 #{resUrl}, 
+							 #{resType},
+							 #{createDate},
+							 #{createId}, 
+							 #{state},
+							 #{resSort})
+	</insert>
+	
+	<update id="update" parameterType="Resource">
+		update ss_resource set res_code=#{resCode},
+						   parent_id =#{parentId},
+						   res_name=#{resName},
+						   res_url=#{resUrl},
+						   res_type=#{resType},
+						   update_date=#{updateDate},
+						   update_id=#{updateId},
+						   state=#{state},
+						   res_sort=#{resSort} 
+		where id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="java.util.List">
+	    delete from ss_resource where id in 
+	    <foreach collection="list" index="i" item="id" open="(" separator="," close=")"> 
+	       #{id} 
+	    </foreach>
+	</delete>
+	
+	<update id="recover"  parameterType="map">
+		update ss_resource set state=${state} 
+		where id = ${id}
+	</update>
+	
+</mapper> 

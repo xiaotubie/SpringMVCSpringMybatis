@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF/layouts/">
+	<excludes>
+		<pattern>/static/*</pattern>
+		<pattern>/api/*</pattern>
+		<pattern>/*ajax=true*</pattern>
+		<pattern>/40*.jsp</pattern>
+		<pattern>/50*.jsp</pattern>
+	</excludes>
+	
+	<decorator name="default" page="default.jsp">
+		<pattern>/*</pattern>
+	</decorator>
+	
+	<decorator name="login" page="login.jsp">
+		<pattern>/login*</pattern>
+		<pattern>/authorize*</pattern>
+	</decorator>
+	
+</decorators>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.xbwl.demo.repository.client.ClientMyBatisDao">
+ 
+	<select id="findOne" parameterType="long" resultType="Client">
+		select id, 
+		client_name as clientName,
+		client_id as clientId,
+		client_secret as clientSecret
+		from ss_client
+		where id=#{id}
+	</select>
+	
+	<select id="findAll" parameterType="map" resultType="Client">
+		select id, 
+		client_name as clientName,
+		client_id as clientId,
+		client_secret as clientSecret
+		from ss_client
+		<if test="name != null">
+			where r.client_name like '%${name}%'
+		</if>
+		order by id ASC
+	</select>
+	
+	<select id="findByClientId" parameterType="string" resultType="Client">
+		select id, 
+		client_name as clientName,
+		client_id as clientId,
+		client_secret as clientSecret
+		from ss_client
+		where client_id=#{clientId}
+	</select>
+	
+	<select id="findByClientSecret" parameterType="string" resultType="Client">
+		select id, 
+		client_name as clientName,
+		client_id as clientId,
+		client_secret as clientSecret
+		from ss_client
+		where client_secret=#{clientSecret}
+	</select>
+	
+	<insert id="save" parameterType="Client">
+		insert into ss_client (
+			id, client_name,  client_id, client_secret)
+		values (
+			SS_SEQ_CLIENT.nextval, #{clientName}, #{clientId}, #{clientSecret}
+			)
+	</insert>
+	
+	<update id="update" parameterType="Client">
+		update ss_client set client_name=#{clientName} where id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="java.util.List">
+	     delete from ss_client where id in 
+	     <foreach collection="list" index="i" item="id" open="(" separator="," close=")"> 
+	       #{id} 
+	     </foreach>
+	</delete>
+	
+</mapper> 
